@@ -1,0 +1,122 @@
+﻿@{
+    Layout = "Layout2";
+}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login</title>
+    <script src="https://www.google.com/recaptcha/api.js" async defer></script>
+    <!-- Include jQuery library -->
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f0f0f0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+        }
+
+        .login-container {
+            margin-left: 160px;
+            background-color: #ffffff;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            width: 600px;
+        }
+
+            .login-container h2 {
+                margin: 0 0 20px;
+                text-align: center;
+            }
+
+            .login-container label {
+                display: block;
+                margin: 10px 0 5px;
+            }
+
+            .login-container input[type="text"],
+            .login-container input[type="password"],
+            .login-container input[type="checkbox"] {
+                width: calc(75% - 22px);
+                padding: 10px;
+                margin-bottom: 10px;
+                border: 1px solid #ccc;
+                border-radius: 4px;
+            }
+
+            .login-container button {
+                margin-top: 25px;
+                width: 50%;
+                padding: 10px;
+                background-color: #007BFF;
+                color: white;
+                border: none;
+                border-radius: 4px;
+                cursor: pointer;
+            }
+
+                .login-container button:hover {
+                    background-color: #0056b3;
+                }
+    </style>
+</head>
+<body>
+    <div class="login-container">
+        <h2>Login</h2>
+
+        <form>
+            <label style="margin-left: 40px;" for="username">Username</label>
+            <input style="margin-left: 40px;" type="text" id="username" name="username" required>
+
+            <label style="margin-left: 40px;" for="password">Password</label>
+            <input style="margin-left: 40px;" type="password" id="password" name="password" required>
+
+            <div style="margin-left: 40px;" class="g-recaptcha" data-sitekey="6LfMPxAqAAAAAK7GMLtTRQhVSn7LUTA6alITvgQb"></div>
+
+            <button id="login" style="margin-left: 90px;" type="submit">Login</button>
+        </form>
+    </div>
+
+</body>
+
+</html>
+<script>
+    $(document).ready(function () {
+        $("#login").on("click", function (e) {
+            e.preventDefault(); // Prevent the default form submission
+
+            // Get reCAPTCHA response token
+            var recaptchaResponse = grecaptcha.getResponse();
+
+            // Serialize form data
+            var formData = $(this).serialize();
+
+            // Append reCAPTCHA response to form data
+            formData += "&gRecaptchaResponse=" + encodeURIComponent(recaptchaResponse);
+
+            $.ajax({
+                type: "POST",
+                url: "/Home/Login",
+                data: formData,
+                success: function (response) {
+                    if (response.redirectUrl) {
+                        window.location.href = response.redirectUrl;
+                    } else {
+                        alert("Login successful");
+                    }
+                },
+                error: function (xhr, status, error) {
+                    // Handle errors
+                    alert("An error occurred: " + error);
+                }
+            });
+        });
+    });
+</script>
